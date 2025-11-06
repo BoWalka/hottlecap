@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hottlecap Mint Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.min.js"></script>
+</style>
+</head>
+<body>
+  <div class="container">
+    <button id="mintBtn" class="mint-btn">MINT</button>
+    
+    <div class="title-container">
+      <h1 class="hott">HOTT</h1>
+      <p class="coin">c&nbsp;o&nbsp;i&nbsp;n</p>
+    </div>
+    
+    <button id="connectBtn" class="connect-btn">CONNECT WALLET</button>
+    
+    <div id="status" class="status"></div>
+    <div id="balance" class="balance">Balance: 0 HOTT</div>
+  </div>
+
+  <script>
+    const CONTRACT_ADDRESS = "0x633F7aC326aD01e995C9D56B4Ff050A5263d3b25";
+    const ABI = [
+      "function mint(address to, uint256 amount)",
+      "function balanceOf(address) view returns (uint256)"
+    ];
+
+    let provider, signer, contract, userAddress;
+
+    document.getElementById('connectBtn').onclick = async () => {
+      if (window.ethereum) {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        updateBalance();
+        document.getElementById('status').textContent = "Connected! Ready to mint.";
+      } else {
+        document.getElementById('status').textContent = "MetaMask not found.";
+      }
+    };
+
+    document.getElementById('mintBtn').onclick = async () => {
+      if (!contract) {
+        document.getElementById('status').textContent = "Connect wallet first.";
+        return;
+      }
+      const amount = ethers.utils.parseEther("1"); // Mint 1 HOTT—change as needed
+      try {
+        const tx = await contract.mint(userAddress, amount, { gasLimit: 100000 });
+        document.getElementById('status').textContent = "Minting...";
+        await tx.wait();
+        document.getElementById('status').textContent = "Minted! Check balance.";
+        updateBalance();
+      } catch (err) {
+        document.getElementById('status').textContent = "Mint failed: " + err.message;
+      }
+    };
+
+    async function updateBalance() {
+      if (contract && userAddress) {
+        const bal = await contract.balanceOf(userAddress);
+        document.getElementById('balance').textContent = `Balance: ${ethers.utils.formatEther(bal)} HOTT`;
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Arial Black', Impact, sans-serif; /* IMPACT for HOTT */
+      background: 
+        /* Grey tiled pixel-frost base */
+        repeating-linear-gradient(
+          0deg,
+          #4b5563 0px,
+          #4b5563 2px,
+          #6b7280 2px,
+          #6b7280 4px
+        ),
+        /* Pixelated frost noise */
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+      background-size: 4px 4px, 50px 50px;
+      color: #ffffff;
+      text-align: center;
+      padding: 40px 20px;
+      margin: 0;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Teal edges for container */
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 30px;
+      border: 2px solid #0d9488; /* Teal border */
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 50px rgba(13,148,136,0.3); /* Teal glow shadow */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100vh;
+    }
+
+    /* MINT button above HOTT - Functional, centered */
+    .mint-btn {
+      background: linear-gradient(135deg, #10b981, #059669); /* Green mint chaos */
+      color: #ffffff;
+      font-weight: 700;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(16,185,129,0.4);
+      margin-bottom: auto;
+    }
+
+    .mint-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16,185,129,0.6);
+    }
+
+    /* CONNECT WALLET button below C O I N - Functional, centered */
+    .connect-btn {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7); /* Teal connect pulse */
+      color: #ffffff;
+      font-weight: 700;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(14,165,233,0.4);
+      margin-top: auto;
+    }
+
+    .connect-btn:hover {
+      transform: translateY(2px);
+      box-shadow: 0 10px 25px rgba(14,165,233,0.6);
+    }
+
+    /* Title Container - Centers HOTT and COIN */
+    .title-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+    }
+
+    /* BIGASS BOLD HOTT - IMPACT ITALICS, WHITE NEON WITH HEAVY DROP SHADOW AND STROKE */
+    .hott {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-size: 6em;
+      font-weight: 900;
+      font-style: italic;
+      color: #ffffff;
+      -webkit-text-stroke: 2px #00ffff; /* Line width stroke - teal outline for pop */
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #ffffff,
+        0 0 15px #00ffff,
+        0 0 20px #00ffff,
+        0 0 35px #00ffff,
+        0 0 40px #00ffff,
+        2px 2px 4px rgba(0,0,0,0.8),
+        4px 4px 8px rgba(0,0,0,0.6),
+        6px 6px 12px rgba(0,0,0,0.4); /* Heavy drop shadow stacked for chaos */
+      letter-spacing: 0.1em;
+      margin: 0;
+      line-height: 1;
+    }
+
+    /* c o i n - Spaced, mathjax-like crisp with kerning */
+    .coin {
+      font-family: 'Courier New', monospace;
+      font-size: 1.5em;
+      color: #ffffff;
+      letter-spacing: 0.3em;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Status and Balance - Simple, centered */
+    .status, .balance {
+      margin: 20px 0;
+      font-size: 1.1em;
+      font-weight: 500;
+      text-align: center;
+    }
+  </style>
+</body>
+</html>
