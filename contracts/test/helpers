@@ -1,0 +1,6 @@
+// Placeholder for test helpers (e.g., expectRevert)
+const expectRevert = async (method, errorMessage) => {
+  await expect(method).to.be.revertedWith(errorMessage);
+};
+
+module.exports = { expectRevert };
