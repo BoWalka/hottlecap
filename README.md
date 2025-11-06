@@ -1,4 +1,4 @@
-# Hottlecap dApp
+# hottlecap HOTT COIN daPP
 
 A decentralized application (dApp) for minting Hottlecap ERC-20 tokens by depositing ETH. Built with Hardhat, Solidity, and a simple frontend.
 
@@ -78,5 +78,6 @@ A decentralized application (dApp) for minting Hottlecap ERC-20 tokens by deposi
 - `public/`: Frontend files
 
 ## License
+
 
 MIT
